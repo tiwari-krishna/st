@@ -9,7 +9,7 @@ static char *font = "InconsolataGo Nerd Font Mono:pixelsize=17:antialias=true:au
 /* Spare fonts */
 static char *font2[] = {
  "Mononoki Nerd Font:pixelsize=15:antialias=true:autohint=true",
- "JoyPixels:pixelsize=13:antialias=true:autohint=true",
+ "JoyPixels:pixelsize=15:antialias=true:autohint=true",
  "Monotty:pixelsize=15:antialias=true:autohint=true",
  "Symbola:pixelsize=15:antialias=true:autohint=true",
 };
@@ -72,7 +72,7 @@ static unsigned int blinktimeout = 800;
 /*
  * thickness of underline and bar cursors
  */
-static unsigned int cursorthickness = 2;
+static unsigned int cursorthickness = 1;
 
 /*
  * 1: render most of the lines/blocks characters without using the font for
@@ -146,17 +146,12 @@ static const char *colorname[] = {
 
 /*
  * Default colors (colorname index)
- * foreground, background, cursor, reverse cursor, selection
+ * foreground, background, cursor, reverse cursor
  */
 unsigned int defaultfg = 259;
 unsigned int defaultbg = 258;
 static unsigned int defaultcs = 256;
 static unsigned int defaultrcs = 257;
-unsigned int selectionbg = 260;
-unsigned int selectionfg = 260;
-/* If 0 use selectionfg as foreground in order to have a uniform foreground-color */
-/* Else if 1 keep original foreground-color of each cell => more colors :) */
-static int ignoreselfg = 1;
 
 /*
  * Default shape of cursor
