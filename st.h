@@ -11,7 +11,8 @@
 #define DIVCEIL(n, d)		(((n) + ((d) - 1)) / (d))
 #define DEFAULT(a, b)		(a) = (a) ? (a) : (b)
 #define LIMIT(x, a, b)		(x) = (x) < (a) ? (a) : (x) > (b) ? (b) : (x)
-#define ATTRCMP(a, b)		((a).mode != (b).mode || (a).fg != (b).fg || \
+#define ATTRCMP(a, b)       (((a).mode & (~ATTR_WRAP) & (~ATTR_LIGA)) != ((b).mode & (~ATTR_WRAP) & (~ATTR_LIGA)) || \
+                (a).fg != (b).fg || \
 				(a).bg != (b).bg)
 #define TIMEDIFF(t1, t2)	((t1.tv_sec-t2.tv_sec)*1000 + \
 				(t1.tv_nsec-t2.tv_nsec)/1E6)
@@ -33,6 +34,7 @@ enum glyph_attribute {
 	ATTR_WRAP       = 1 << 8,
 	ATTR_WIDE       = 1 << 9,
     ATTR_BOXDRAW    = 1 << 11,
+    ATTR_LIGA       = 1 << 12,
 	ATTR_WDUMMY     = 1 << 10,
     ATTR_SELECTED   = 1 << 11,
 	ATTR_BOLD_FAINT = ATTR_BOLD | ATTR_FAINT,
@@ -83,6 +85,7 @@ void die(const char *, ...);
 void redraw(void);
 void draw(void);
 
+void iso14755(const Arg *);
 void newterm(const Arg *);
 void kscrolldown(const Arg *);
 void kscrollup(const Arg *);
@@ -90,6 +93,7 @@ void printscreen(const Arg *);
 void printsel(const Arg *);
 void sendbreak(const Arg *);
 void toggleprinter(const Arg *);
+void copyurl(const Arg *);
 
 int tattrset(int);
 int tisaltscr(void);
@@ -105,6 +109,7 @@ void ttywrite(const char *, size_t, int);
 void resettitle(void);
 
 void selclear(void);
+void externalpipe(const Arg *);
 void selinit(void);
 void selstart(int, int, int);
 void selextend(int, int, int, int);
@@ -114,6 +119,7 @@ char *getsel(void);
 size_t utf8encode(Rune, char *);
 
 void *xmalloc(size_t);
+void opencopied(const Arg *);
 void *xrealloc(void *, size_t);
 char *xstrdup(const char *);
 
@@ -139,3 +145,4 @@ extern unsigned int defaultfg;
 extern unsigned int defaultbg;
 extern const int boxdraw, boxdraw_bold, boxdraw_braille;
 extern float alpha;
+extern char *iso14755_cmd;

@@ -5,7 +5,7 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-static char *font = "InconsolataGo Nerd Font Mono:pixelsize=17:antialias=true:autohint=true";
+static char *font = "InconsolataGo Nerd Font Mono:pixelsize=16:antialias=true:autohint=true";
 /* Spare fonts */
 static char *font2[] = {
  "Mononoki Nerd Font:pixelsize=15:antialias=true:autohint=true",
@@ -138,7 +138,7 @@ static const char *colorname[] = {
      /* more colors can be added after 255 to use with DefaultXX */
      "#add8e6", /* 256 -> cursor */
      "#555555", /* 257 -> rev cursor*/
-     "#1c1a1a", /* 258 -> bg */
+     "#282828", /* 258 -> bg */
      "#ebe2cd", /* 259 -> fg */
      "#47aeed", /* 260 -> selection*/
 };
@@ -188,6 +188,11 @@ static unsigned int defaultattr = 11;
  * modifier, set to 0 to not use it.
  */
 static uint forcemousemod = ShiftMask;
+
+/*
+* Command used to query unicode glyphs.
+*/
+char *iso14755_cmd = "dmenu -w \"$WINDOWID\" -p codepoint: </dev/null";
 
 /*
  * Xresources preferences to load at startup
@@ -263,7 +268,10 @@ static Shortcut shortcuts[] = {
 	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
     { TERMMOD,              XK_Return,      newterm,        {.i =  0} },
     { ShiftMask,            XK_Page_Up,     kscrollup,      {.i = -1} },
+    { MODKEY,               XK_l,           copyurl,        {.i =  0} },
     { ShiftMask,            XK_Page_Down,   kscrolldown,    {.i = -1} },
+    { TERMMOD,              XK_I,           iso14755,       {.i =  0} },
+    { MODKEY,               XK_o,           opencopied,     {.v = "qutebrowser"} },
 };
 
 /*
