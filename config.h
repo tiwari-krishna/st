@@ -5,10 +5,10 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-static char *font = "JetBrains Mono:pixelsize=14:antialias=true:autohint=true";
+static char *font = "JetBrainsMono Nerd Font:pixelsize=14:antialias=true:autohint=true";
 /* Spare fonts */
 static char *font2[] = {
- "FontAwesome:pixelsize=13:antialias=true:autohint=true",
+ "Noto Color Emoji:pixelsize=13:antialias=true:autohint=true",
  "Kantipur:pixelsize=15:antialias=true:autohint=true",
  "Symbola:pixelsize=15:antialias=true:autohint=true",
 };
@@ -117,22 +117,25 @@ float alpha = 0.8;
 
 /* Terminal colors (16 first used in escape sequence) */
 static const char *colorname[] = {
-    "#282828", /* hard contrast: #1d2021 / soft contrast: #32302f */
-    "#cc241d",
-    "#98971a",
-    "#d79921",
-    "#458588",
-    "#b16286",
-    "#689d6a",
-    "#a89984",
-    "#928374",
-    "#fb4934",
-    "#b8bb26",
-    "#fabd2f",
-    "#83a598",
-    "#d3869b",
-    "#8ec07c",
-    "#ebdbb2",
+        /* 8 normal colors */
+   [0] = "#282828", /* hard contrast: #1d2021 / soft contrast: #32302f */
+   [1] = "#cc241d", /* red     */
+   [2] = "#98971a", /* green   */
+   [3] = "#d79921", /* yellow  */
+   [4] = "#458588", /* blue    */
+   [5] = "#b16286", /* magenta */
+   [6] = "#689d6a", /* cyan    */
+   [7] = "#a89984", /* white   */
+ 
+   /* 8 bright colors */
+   [8]  = "#928374", /* black   */
+   [9]  = "#fb4934", /* red     */
+   [10] = "#b8bb26", /* green   */
+   [11] = "#fabd2f", /* yellow  */
+   [12] = "#83a598", /* blue    */
+   [13] = "#d3869b", /* magenta */
+   [14] = "#8ec07c", /* cyan    */
+   [15] = "#ebdbb2", /* white   */
      [255] = 0,
      /* more colors can be added after 255 to use with DefaultXX */
      "#add8e6", /* 256 -> cursor */
@@ -147,9 +150,9 @@ static const char *colorname[] = {
  * Default colors (colorname index)
  * foreground, background, cursor, reverse cursor
  */
-unsigned int defaultfg = 259;
-unsigned int defaultbg = 258;
-static unsigned int defaultcs = 256;
+unsigned int defaultfg = 15;
+unsigned int defaultbg = 0;
+static unsigned int defaultcs = 15;
 static unsigned int defaultrcs = 257;
 
 /*
@@ -164,7 +167,7 @@ static unsigned int defaultrcs = 257;
  * 7: Blinking st cursor
  * 8: Steady st cursor
  */
-static unsigned int cursorshape = 1;
+static unsigned int cursorshape = 5;
 static Rune stcursor = 0x2603; /* snowman (U+2603) */
 
 /*
@@ -198,43 +201,6 @@ static uint forcemousemod = ShiftMask;
 * Command used to query unicode glyphs.
 */
 char *iso14755_cmd = "dmenu -w \"$WINDOWID\" -p codepoint: </dev/null";
-
-/*
- * Xresources preferences to load at startup
- */
-ResourcePref resources[] = {
-       { "font",         STRING,  &font },
-       { "color0",       STRING,  &colorname[0] },
-       { "color1",       STRING,  &colorname[1] },
-       { "color2",       STRING,  &colorname[2] },
-       { "color3",       STRING,  &colorname[3] },
-       { "color4",       STRING,  &colorname[4] },
-       { "color5",       STRING,  &colorname[5] },
-       { "color6",       STRING,  &colorname[6] },
-       { "color7",       STRING,  &colorname[7] },
-       { "color8",       STRING,  &colorname[8] },
-       { "color9",       STRING,  &colorname[9] },
-       { "color10",      STRING,  &colorname[10] },
-       { "color11",      STRING,  &colorname[11] },
-       { "color12",      STRING,  &colorname[12] },
-       { "color13",      STRING,  &colorname[13] },
-       { "color14",      STRING,  &colorname[14] },
-       { "color15",      STRING,  &colorname[15] },
-       { "background",   STRING,  &colorname[256] },
-       { "foreground",   STRING,  &colorname[257] },
-       { "cursorColor",  STRING,  &colorname[258] },
-       { "termname",     STRING,  &termname },
-       { "shell",        STRING,  &shell },
-       { "minlatency",   INTEGER, &minlatency },
-       { "maxlatency",   INTEGER, &maxlatency },
-       { "blinktimeout", INTEGER, &blinktimeout },
-       { "bellvolume",   INTEGER, &bellvolume },
-       { "tabspaces",    INTEGER, &tabspaces },
-       { "borderpx",     INTEGER, &borderpx },
-       { "cwscale",      FLOAT,   &cwscale },
-       { "chscale",      FLOAT,   &chscale },
-};
-
 
 /*
  * Internal mouse shortcuts.
