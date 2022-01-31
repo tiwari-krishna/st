@@ -5,14 +5,13 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-static char *font = "JetBrainsMono Nerd Font:pixelsize=14:antialias=true:autohint=true";
+static char *font = "Monospace:pixelsize=14:antialias=true:autohint=true";
 /* Spare fonts */
 static char *font2[] = {
  "Noto Color Emoji:pixelsize=13:antialias=true:autohint=true",
- "Kantipur:pixelsize=15:antialias=true:autohint=true",
- "Symbola:pixelsize=15:antialias=true:autohint=true",
+ "Symbola:pixelsize=13:antialias=true:autohint=true",
 };
-static int borderpx = 2;
+static int borderpx = 1;
 
 /*
  * What program is execed by st depends of these precedence rules:
@@ -112,7 +111,7 @@ char *termname = "st-256color";
 unsigned int tabspaces = 8;
 
 /* bg opacity */
-float alpha = 0.8;
+float alpha = 0.9;
 
 
 /* Terminal colors (16 first used in escape sequence) */
@@ -147,6 +146,12 @@ static const char *colorname[] = {
 
 
 /*
+ * Whether to use pixel geometry or cell geometry
+ */
+
+static Geometry geometry = CellGeometry;
+
+/*
  * Default colors (colorname index)
  * foreground, background, cursor, reverse cursor
  */
@@ -176,6 +181,13 @@ static Rune stcursor = 0x2603; /* snowman (U+2603) */
 
 static unsigned int cols = 80;
 static unsigned int rows = 24;
+
+/*
+ * Default width and height (including borders!)
+ */
+
+static unsigned int width = 564;
+static unsigned int height = 364;
 
 /*
  * Default colour and shape of the mouse cursor
@@ -237,7 +249,7 @@ static Shortcut shortcuts[] = {
 	{ TERMMOD,              XK_Y,           selpaste,       {.i =  0} },
 	{ ShiftMask,            XK_Insert,      selpaste,       {.i =  0} },
 	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
-    { TERMMOD,              XK_Return,      newterm,        {.i =  0} },
+    { TERMMOD,              XK_T,           newterm,        {.i =  0} },
     { MODKEY,               XK_h,           kscrollup,      {.i = -1} },
     { MODKEY,               XK_k,           kscrollup,      {.i = 1} },
     { TERMMOD,              XK_Page_Up,     kscrollup,      {.i = -1} },
