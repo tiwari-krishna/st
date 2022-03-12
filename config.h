@@ -5,13 +5,14 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-static char *font = "Monospace:pixelsize=14:antialias=true:autohint=true";
+static char *font = "Monospace:pixelsize=16:antialias=true:autohint=true";
 /* Spare fonts */
 static char *font2[] = {
- "Noto Color Emoji:pixelsize=13:antialias=true:autohint=true",
- "Symbola:pixelsize=13:antialias=true:autohint=true",
+	"Noto Color Emoji:pixelsize=13:antialias=true:autohint=true", 
+	"Hack Nerd Font Mono:pixelsize=14:antialias=true:autohint=true",
 };
-static int borderpx = 1;
+
+static int borderpx = 2;
 
 /*
  * What program is execed by st depends of these precedence rules:
@@ -113,43 +114,37 @@ unsigned int tabspaces = 8;
 /* bg opacity */
 float alpha = 0.9;
 
-
 /* Terminal colors (16 first used in escape sequence) */
 static const char *colorname[] = {
-        /* 8 normal colors */
-   [0] = "#282828", /* hard contrast: #1d2021 / soft contrast: #32302f */
-   [1] = "#cc241d", /* red     */
-   [2] = "#98971a", /* green   */
-   [3] = "#d79921", /* yellow  */
-   [4] = "#458588", /* blue    */
-   [5] = "#b16286", /* magenta */
-   [6] = "#689d6a", /* cyan    */
-   [7] = "#a89984", /* white   */
- 
-   /* 8 bright colors */
-   [8]  = "#928374", /* black   */
-   [9]  = "#fb4934", /* red     */
-   [10] = "#b8bb26", /* green   */
-   [11] = "#fabd2f", /* yellow  */
-   [12] = "#83a598", /* blue    */
-   [13] = "#d3869b", /* magenta */
-   [14] = "#8ec07c", /* cyan    */
-   [15] = "#ebdbb2", /* white   */
-     [255] = 0,
-     /* more colors can be added after 255 to use with DefaultXX */
-     "#add8e6", /* 256 -> cursor */
-     "#555555", /* 257 -> rev cursor*/
-     "#24221e", /* 258 -> bg */
-     "#ebe2cd", /* 259 -> fg */
-     "#47aeed", /* 260 -> selection*/
+	/* 8 normal colors */
+    [0] = "#282828", /* hard contrast: #1d2021 / soft contrast: #32302f */
+	[1] = "#cc241d", /* red     */
+	[2] = "#98971a", /* green   */
+	[3] = "#d79921", /* yellow  */
+	[4] = "#458588", /* blue    */
+	[5] = "#b16286", /* magenta */
+	[6] = "#689d6a", /* cyan    */
+	[7] = "#a89984", /* white   */
+
+	/* 8 bright colors */
+    [8]  = "#928374", /* black   */
+	[9]  = "#fb4934", /* red     */
+	[10] = "#b8bb26", /* green   */
+	[11] = "#fabd2f", /* yellow  */
+	[12] = "#83a598", /* blue    */
+	[13] = "#d3869b", /* magenta */
+	[14] = "#8ec07c", /* cyan    */
+	[15] = "#ebdbb2", /* white   */
+
+	[255] = 0,
+
+	/* more colors can be added after 255 to use with DefaultXX */
+	"#cccccc",
+	"#555555",
+	"gray90", /* default foreground colour */
+	"black", /* default background colour */
 };
 
-
-/*
- * Whether to use pixel geometry or cell geometry
- */
-
-static Geometry geometry = CellGeometry;
 
 /*
  * Default colors (colorname index)
@@ -157,23 +152,32 @@ static Geometry geometry = CellGeometry;
  */
 unsigned int defaultfg = 15;
 unsigned int defaultbg = 0;
-static unsigned int defaultcs = 15;
+unsigned int defaultcs = 15;
 static unsigned int defaultrcs = 257;
+unsigned int const currentBg = 10, buffSize = 2048;
+/// Enable double / triple click yanking / selection of word / line.
+int const mouseYank = 1, mouseSelect = 0;
+/// [Vim Browse] Colors for search results currently on screen.
+unsigned int const highlightBg = 160, highlightFg = 15;
+char const wDelS[] = "!\"#$%&'()*+,-./:;<=>?@[\\]^`{|}~", wDelL[] = " \t";
+char *nmKeys [] = {              ///< Shortcusts executed in normal mode
+  "R/Building\nN", "r/Building\n", "X/juli@machine\nN", "x/juli@machine\n",
+  "Q?[Leaving vim, starting execution]\n","F/: error:\nN", "f/: error:\n", "DQf"
+};
+unsigned int const amountNmKeys = sizeof(nmKeys) / sizeof(*nmKeys);
+/// Style of the {command, search} string shown in the right corner (y,v,V,/)
+Glyph styleSearch = {' ', ATTR_ITALIC | ATTR_BOLD_FAINT, 7, 16};
+Glyph style[] = {{' ',ATTR_ITALIC|ATTR_FAINT,15,16}, {' ',ATTR_ITALIC,232,11},
+                 {' ', ATTR_ITALIC, 232, 4}, {' ', ATTR_ITALIC, 232, 12}};
 
 /*
- * Default style of cursor
- * 0: Blinking block
- * 1: Blinking block (default)
- * 2: Steady block ("â–ˆ")
- * 3: Blinking underline
- * 4: Steady underline ("_")
- * 5: Blinking bar
- * 6: Steady bar ("|")
- * 7: Blinking st cursor
- * 8: Steady st cursor
+ * Default shape of cursor
+ * 2: Block ("█")
+ * 4: Underline ("_")
+ * 6: Bar ("|")
+ * 7: Snowman ("☃")
  */
-static unsigned int cursorshape = 5;
-static Rune stcursor = 0x2603; /* snowman (U+2603) */
+static unsigned int cursorshape = 2;
 
 /*
  * Default columns and rows numbers
@@ -181,13 +185,6 @@ static Rune stcursor = 0x2603; /* snowman (U+2603) */
 
 static unsigned int cols = 80;
 static unsigned int rows = 24;
-
-/*
- * Default width and height (including borders!)
- */
-
-static unsigned int width = 564;
-static unsigned int height = 364;
 
 /*
  * Default colour and shape of the mouse cursor
@@ -210,19 +207,12 @@ static unsigned int defaultattr = 11;
 static uint forcemousemod = ShiftMask;
 
 /*
-* Command used to query unicode glyphs.
-*/
-char *iso14755_cmd = "dmenu -w \"$WINDOWID\" -p codepoint: </dev/null";
-
-/*
  * Internal mouse shortcuts.
  * Beware that overloading Button1 will disable the selection.
  */
 static MouseShortcut mshortcuts[] = {
 	/* mask                 button   function        argument       release */
 	{ XK_ANY_MOD,           Button2, selpaste,       {.i = 0},      1 },
-    { XK_ANY_MOD,           Button4, kscrollup,      {.i = 1},      0, /* !alt */ -1 },
-    { XK_ANY_MOD,           Button5, kscrolldown,    {.i = 1},      0, /* !alt */ -1 },
 	{ ShiftMask,            Button4, ttysend,        {.s = "\033[5;2~"} },
 	{ XK_ANY_MOD,           Button4, ttysend,        {.s = "\031"} },
 	{ ShiftMask,            Button5, ttysend,        {.s = "\033[6;2~"} },
@@ -233,33 +223,29 @@ static MouseShortcut mshortcuts[] = {
 #define MODKEY Mod1Mask
 #define TERMMOD (ControlMask|ShiftMask)
 
+static char *openurlcmd[] = { "/bin/sh", "-c", "st-urlhandler -o", "externalpipe", NULL };
+static char *copyurlcmd[] = { "/bin/sh", "-c", "st-urlhandler -c", "externalpipe", NULL };
+
 static Shortcut shortcuts[] = {
 	/* mask                 keysym          function        argument */
 	{ XK_ANY_MOD,           XK_Break,       sendbreak,      {.i =  0} },
 	{ ControlMask,          XK_Print,       toggleprinter,  {.i =  0} },
 	{ ShiftMask,            XK_Print,       printscreen,    {.i =  0} },
 	{ XK_ANY_MOD,           XK_Print,       printsel,       {.i =  0} },
-	{ TERMMOD,              XK_H,           zoom,           {.f = +1} },
-	{ TERMMOD,              XK_L,           zoom,           {.f = -1} },
-	{ TERMMOD,              XK_semicolon,   zoomreset,      {.f =  0} },
+	{ MODKEY|ShiftMask,     XK_K,           zoom,           {.f = +1} },
+	{ MODKEY|ShiftMask,     XK_J,           zoom,           {.f = -1} },
+	{ MODKEY|ShiftMask,     XK_G,           zoomreset,      {.f =  0} },
 	{ TERMMOD,              XK_C,           clipcopy,       {.i =  0} },
-	{ MODKEY,               XK_c,           clipcopy,       {.i =  0} },
 	{ TERMMOD,              XK_V,           clippaste,      {.i =  0} },
+	{ MODKEY,               XK_c,           clipcopy,       {.i =  0} },
 	{ MODKEY,               XK_v,           clippaste,      {.i =  0} },
+	{ TERMMOD,              XK_C,           clipcopy,       {.i =  0} },
 	{ TERMMOD,              XK_Y,           selpaste,       {.i =  0} },
 	{ ShiftMask,            XK_Insert,      selpaste,       {.i =  0} },
 	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
-    { TERMMOD,              XK_T,           newterm,        {.i =  0} },
-    { MODKEY,               XK_h,           kscrollup,      {.i = -1} },
-    { MODKEY,               XK_k,           kscrollup,      {.i = 1} },
-    { TERMMOD,              XK_Page_Up,     kscrollup,      {.i = -1} },
-    { MODKEY,               XK_l,           kscrolldown,    {.i = -1} },
-    { TERMMOD,              XK_Page_Down,   kscrolldown,    {.i = -1} },
-    { MODKEY,               XK_j,           kscrolldown,    {.i = 1} },
-    { MODKEY,               XK_l,           copyurl,        {.i =  0} },
-    { TERMMOD,              XK_I,           iso14755,       {.i =  0} },
-    { MODKEY,               XK_o,           opencopied,     {.v = "qutebrowser"} },
-    { TERMMOD,              XK_Escape,      keyboard_select,{.i =  0} },
+    { MODKEY,               XK_l,           externalpipe,   {.v = openurlcmd } },
+    { MODKEY,               XK_y,           externalpipe,   {.v = copyurlcmd } },
+	{ MODKEY,               XK_x,           normalMode,     {.i =  0} },
 };
 
 /*
@@ -337,8 +323,8 @@ static Key key[] = {
 	{ XK_KP_Delete,     ControlMask,    "\033[3;5~",    +1,    0},
 	{ XK_KP_Delete,     ShiftMask,      "\033[2K",      -1,    0},
 	{ XK_KP_Delete,     ShiftMask,      "\033[3;2~",    +1,    0},
+	{ XK_KP_Delete,     XK_ANY_MOD,     "\033[P",       -1,    0},
 	{ XK_KP_Delete,     XK_ANY_MOD,     "\033[3~",      +1,    0},
-    { XK_KP_Delete,     XK_ANY_MOD,     "\033[3~",      -1,    0},
 	{ XK_KP_Multiply,   XK_ANY_MOD,     "\033Oj",       +2,    0},
 	{ XK_KP_Add,        XK_ANY_MOD,     "\033Ok",       +2,    0},
 	{ XK_KP_Enter,      XK_ANY_MOD,     "\033OM",       +2,    0},
@@ -405,7 +391,7 @@ static Key key[] = {
 	{ XK_Delete,        ControlMask,    "\033[3;5~",    +1,    0},
 	{ XK_Delete,        ShiftMask,      "\033[2K",      -1,    0},
 	{ XK_Delete,        ShiftMask,      "\033[3;2~",    +1,    0},
-    { XK_Delete,        XK_ANY_MOD,     "\033[3~",      -1,    0},
+	{ XK_Delete,        XK_ANY_MOD,     "\033[P",       -1,    0},
 	{ XK_Delete,        XK_ANY_MOD,     "\033[3~",      +1,    0},
 	{ XK_BackSpace,     XK_NO_MOD,      "\177",          0,    0},
 	{ XK_BackSpace,     Mod1Mask,       "\033\177",      0,    0},
@@ -531,27 +517,3 @@ static char ascii_printable[] =
 	" !\"#$%&'()*+,-./0123456789:;<=>?"
 	"@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"
 	"`abcdefghijklmnopqrstuvwxyz{|}~";
-
-/**
- * Undercurl style. Set UNDERCURL_STYLE to one of the available styles.
- *
- * Curly: Dunno how to draw it *shrug*
- *  _   _   _   _
- * ( ) ( ) ( ) ( )
- *   (_) (_) (_) (_)
- *
- * Spiky:
- * /\  /\   /\  /\
- *   \/  \/   \/
- *
- * Capped:
- *  _     _     _
- * / \   / \   / \
- *    \_/   \_/
- */
-// Available styles
-#define UNDERCURL_CURLY 0
-#define UNDERCURL_SPIKY 1
-#define UNDERCURL_CAPPED 2
-// Active style
-#define UNDERCURL_STYLE UNDERCURL_SPIKY
